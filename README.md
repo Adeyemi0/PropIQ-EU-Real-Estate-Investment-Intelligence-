@@ -1,216 +1,158 @@
-# PropIQ — The EU Real Estate Investment Advisor
+# PropIQ — EU Real Estate Market Analysis
 
-[![Cities Covered](https://img.shields.io/badge/Cities-10%20Major%20EU%20Markets-gold?style=flat-square)](#the-10-markets)
-[![Properties Analysed](https://img.shields.io/badge/Properties%20Analysed-5%2C000%2B-blue?style=flat-square)](#dataset)
-[![No Login Required](https://img.shields.io/badge/No%20Login-Open%20In%20Browser-green?style=flat-square)](#getting-started)
+> **A data analysis of 5,000+ European property listings, presented not as a report or a dashboard — but as a personalised investment experience built directly in the browser.**
+
+[![Dataset](https://img.shields.io/badge/Dataset-5%2C000%20EU%20Properties-gold?style=flat-square)](#the-dataset)
+[![Markets](https://img.shields.io/badge/Markets-10%20EU%20Cities-blue?style=flat-square)](#market-findings)
+[![Tool](https://img.shields.io/badge/Presented%20In-HTML%20%2F%20CSS%20%2F%20JS-green?style=flat-square)](#why-not-power-bi-or-excel)
 
 ---
 
 ## Table of Contents
 
-1. [The Investor Problem I Was Solving](#the-investor-problem-i-was-solving)
-2. [The Insight That Changed the Approach](#the-insight-that-changed-the-approach)
-3. [What PropIQ Actually Does](#what-propiq-actually-does)
-4. [The 10 Markets Covered](#the-10-markets-covered)
-5. [How Your Answers Drive the Intelligence](#how-your-answers-drive-the-intelligence)
-6. [Understanding the Scores & Signals](#understanding-the-scores--signals)
-7. [What the Data Reveals About European Markets](#what-the-data-reveals-about-european-markets)
-8. [The Scoring Engine — For the Curious](#the-scoring-engine--for-the-curious)
-9. [Data Analysis Code](#data-analysis-code)
-10. [Building the App](#building-the-app)
-11. [The Design Philosophy](#the-design-philosophy)
-12. [Known Issues & Fixes](#known-issues--fixes)
-13. [Getting Started](#getting-started)
-14. [What's Next](#whats-next)
-15. [License](#license)
+1. [What This Analysis Is About](#what-this-analysis-is-about)
+2. [The Thought Process — Why I Built It This Way](#the-thought-process--why-i-built-it-this-way)
+3. [Why Not Power BI or Excel?](#why-not-power-bi-or-excel)
+4. [The Dataset](#the-dataset)
+5. [Analytical Framework](#analytical-framework)
+6. [Key Market Findings](#key-market-findings)
+7. [How the Scoring Model Works](#how-the-scoring-model-works)
+8. [Analysis Code — Python](#analysis-code--python)
+9. [Delivering the Analysis — HTML App Code](#delivering-the-analysis--html-app-code)
+10. [Design Decisions](#design-decisions)
+11. [Bugs Encountered & Fixed](#bugs-encountered--fixed)
+12. [Getting Started](#getting-started)
+13. [What I Would Do With More Data](#what-i-would-do-with-more-data)
+14. [License](#license)
 
 ---
 
-## The Investor Problem I Was Solving
+## What This Analysis Is About
 
-Every serious investor I know has experienced the same frustration.
+This project analyses a dataset of **5,000 European property listings** across 10 major cities to answer a question every real estate investor actually asks:
 
-You're looking at European real estate. You open a property portal. You get 5,000 listings. Some are in Paris at €8,000/sqm. Some are in Warsaw at €1,200/sqm. There are villas, apartments, offices, townhouses. There are properties that have been sitting on the market for 300 days and properties that sold in 12. There is no shortage of data.
+> *Given my budget, my goal, and my risk appetite — where in Europe should I invest, what should I buy, and what should I avoid?*
 
-And yet — you still don't know what to do.
+The analysis covers:
 
-**Because the problem was never a lack of data. The problem is that raw data does not know your situation.**
+- **Undervaluation signals** — which cities and individual properties are priced below their local market average
+- **Demand velocity** — how fast properties are being absorbed in each market (days on market as a demand proxy)
+- **Price growth** — appreciation from last sold price to current asking price, used as a historical momentum signal
+- **Liquidity** — how quickly an investor can exit a position in each market
+- **Composite investment scoring** — combining all four signals into a single ranked output, weighted by the investor's stated goal
 
-It doesn't know that you have €500,000 to deploy and you need it working within 18 months. It doesn't know that you're comfortable with emerging market risk in exchange for upside. It doesn't know whether you want rental cash flow or capital appreciation. It doesn't know that you prefer apartments over villas because they're more liquid.
-
-So you end up doing what most investors do: you spend hours filtering, comparing, and second-guessing yourself — and you still leave with a shortlist, not a conviction.
-
-I built PropIQ to solve exactly that.
-
----
-
-## The Insight That Changed the Approach
-
-The turning point was realising that **most real estate tools are built for analysts, not investors.**
-
-A dashboard gives you a chart of average prices by city. Fine. But that chart doesn't tell you whether *this specific property* in *this specific city* is cheap or expensive relative to its local market. It doesn't tell you whether that city fits your investment thesis. It doesn't rank anything. It just shows you data and leaves the decision to you.
-
-I thought about how a genuinely good private wealth advisor operates. When a client comes in, they don't get a spreadsheet. They get a conversation. The advisor asks the right questions — *what's your goal, what's your timeline, how much risk can you stomach* — and then they deliver a recommendation. Not a report. A recommendation.
-
-**That became the design brief: build an advisor, not a dashboard.**
-
-The app had to earn the right to show data by first understanding the person looking at it. Every metric, every ranking, every highlighted property had to be filtered through the lens of that individual investor's profile. The same city that is a bad idea for a short-term flipper might be the best possible entry for a long-term appreciation play. The tool had to know the difference.
-
-The second insight was about **how investors actually think about price**. An investor doesn't care that a property costs €3,500/sqm in isolation. They care whether €3,500/sqm is cheap or expensive for that city. Warsaw at €3,500/sqm would be a premium property. Paris at €3,500/sqm would be a bargain. Context is everything. So every price signal in PropIQ is shown relative to the local city average — not against a European average that flattens all nuance.
+The output is not a static report. The findings are delivered as an **interactive experience** where an investor inputs their profile and receives a personalised version of the analysis — their cities, their properties, their risk context.
 
 ---
 
-## What PropIQ Actually Does
+## The Thought Process — Why I Built It This Way
 
-PropIQ is built around a single user journey: **six questions in, a complete investment brief out.**
+Most data analysis projects end the same way: a PDF report, a Power BI dashboard, or an Excel workbook. The analyst does the hard work, produces the findings, and then hands the output to whoever commissioned it. That person reads it, nods, and then still asks — *"but what does this mean for me specifically?"*
 
-### Step 1 — It Asks Before It Tells
+That gap bothered me with this dataset in particular.
 
-Before showing you a single property, PropIQ captures your investment profile:
+Real estate investment data is deeply personal. The same dataset means completely different things to different investors. A €500,000 budget in Paris buys you a small apartment. The same budget in Warsaw buys a portfolio. A short-term flipper needs to know which markets move fast. A long-term appreciation investor needs to know where prices have historically grown. A rental income investor needs to know where demand is structurally strong. These are not the same analysis — they are four different analyses of the same data.
 
-- **Goal** — Are you flipping for quick profit, building rental income, or holding for long-term appreciation? This one answer shifts the entire scoring model.
-- **Budget** — Your minimum and maximum spend. Every property shown will fit this range.
-- **Location preference** — Major established capitals, undervalued emerging markets, or no preference.
-- **Risk tolerance** — Conservative markets with proven liquidity, or emerging markets with higher upside potential.
-- **Investment horizon** — 0–1 year, 1–3 years, or 3+ years. Short-horizon investors need fast-moving markets. Long-horizon investors can absorb slower cycles.
-- **Property type** — Apartments, villas, or open to anything the data recommends.
+**The conventional approach would have been to build one dashboard and let the user filter.** Filters are fine. But a filter doesn't explain *why* something is a good fit for you. It doesn't reweight the scoring model based on your goal. It doesn't tell you what to avoid. It doesn't give you a recommendation — it gives you a narrower version of the full dataset and leaves the interpretation entirely to you.
 
-### Step 2 — The Engine Scores Everything
+I wanted the analysis to do the interpretation. I wanted the output to speak directly to the person receiving it, in their context, with their constraints. That meant the analysis needed to capture the investor's profile first — and then deliver findings that were filtered, scored, and narrated specifically for that profile.
 
-Behind the scenes, PropIQ runs a weighted composite scoring model across all 10 cities using four investment signals: undervaluation relative to the EU average, demand velocity (how fast properties move), price growth since last sale, and market liquidity. The weights on those four signals shift based on your goal.
-
-A flipper needs undervaluation and liquidity. A rental investor needs demand. An appreciation investor needs growth. The same city scores differently for each profile — which is exactly how a real investment decision should work.
-
-### Step 3 — You Get a Brief, Not a Report
-
-The output is not a table of numbers. It is a structured investment brief:
-
-- Your **top 3 city recommendations**, ranked and explained in plain language
-- A **narrative summary** — why each city fits your specific profile
-- A **recommended property type** — based on what sells fastest and yields best in your target market
-- A **filtered property table** — real listings from the dataset, sorted by investment score, showing only properties within your budget
-- **Risk flags** — markets you should avoid given your profile, and why
-- **Supporting evidence** — comparative charts showing price per sqm, days on market, and growth signals across all 10 cities
-
-### Step 4 — You Can Challenge the Recommendation
-
-The Scenario Planner lets you stress-test the output. Change your goal from rental to flip. Switch your risk tolerance from low to high. Move your horizon from long to short. The city rankings update instantly, showing you exactly how sensitive the recommendation is to your assumptions. This is how real investment analysis works — not a single answer, but a decision under different scenarios.
+That decision — **analysis that personalises itself to the reader** — is what drove every other choice in the project.
 
 ---
 
-## The 10 Markets Covered
+## Why Not Power BI or Excel?
 
-PropIQ analyses the following EU cities, representing a spectrum from mature premium markets to undervalued emerging capitals:
+This is the honest answer to what most analysts would have reached for.
 
-| City | Country | Market Type | Avg €/sqm | Avg Days Listed |
-|---|---|---|---|---|
-| Paris | France | Premium / Established | €5,201 | 172 days |
-| Amsterdam | Netherlands | Premium / Established | €4,754 | 183 days |
-| Berlin | Germany | Premium / Growing | €3,233 | 164 days |
-| Brussels | Belgium | Mid-Market / High Growth | €2,784 | 172 days |
-| Vienna | Austria | Mid-Market / Stable | €2,774 | 170 days |
-| Rome | Italy | Mid-Market / Recovering | €2,760 | 173 days |
-| Prague | Czech Republic | Emerging / Appreciating | €2,181 | 162 days |
-| Madrid | Spain | Emerging / Liquid | €2,171 | 175 days |
-| Lisbon | Portugal | Emerging / High Demand | €1,881 | 171 days |
-| Warsaw | Poland | Undervalued / High Potential | €1,503 | 171 days |
+**Power BI** would have been the natural choice. The dataset is clean, the relationships are simple, and Power BI handles interactive filtering well. I actually built a full Power BI version of this analysis using DAX measures, disconnected parameter tables, What-If sliders, and the HTML Content visual for a styled narrative card. It works.
 
-The spread between the cheapest and most expensive market is **3.5x**. That gap is where investment opportunities live.
+But Power BI has a ceiling when it comes to delivering a *guided* experience. You can build slicers. You can build bookmarks. You can approximate a questionnaire with buttons. But you cannot build a step-by-step flow where the analysis literally walks the investor through six questions before showing them anything — where the experience itself signals that the output has been built around their answers. That guided flow is not a cosmetic feature. It is a core part of how the findings land. An investor who has just told the analysis their goal and risk profile is primed to trust the recommendation in a way that someone who just clicked a slicer is not.
+
+**Excel** would have been even more limiting. Excel is a calculation engine. It is excellent for financial modelling, scenario analysis, and structured data manipulation. For communicating findings to a non-analyst audience — let alone personalising those findings — it is the wrong tool.
+
+**HTML, CSS, and JavaScript** gave me complete control over the experience of receiving the analysis. The same scoring model that could have lived in a DAX measure lives in a JavaScript function. The same city benchmarks that could have been a Power Query aggregation are a pre-computed object in the browser. The result is a self-contained file that opens in any browser, requires no software, no login, no license — and delivers a richer, more personalised experience than either BI tool would have produced.
+
+The tool choice is not about preference. It is about what the analysis needed to do and what each tool is actually capable of.
 
 ---
 
-## How Your Answers Drive the Intelligence
+## The Dataset
 
-This is the core of what makes PropIQ different from a filtered property search. Your answers don't just filter the data — they **reweight the entire scoring model**.
+**5,000 European property listings** across 10 cities, covering both Sale and Rental listing types.
 
-### If Your Goal Is Flipping for Quick Profit
+| Field | Description |
+|---|---|
+| `property_id` | Unique identifier |
+| `listing_date` | Date listed |
+| `property_type` | Apartment, Villa, Townhouse, Office, Retail, Warehouse, Mixed-Use |
+| `listing_type` | Sale or Rental |
+| `city` / `country` | Location |
+| `bedrooms` / `bathrooms` | Unit configuration |
+| `square_meters` | Floor area |
+| `year_built` | Construction year |
+| `sale_price_eur` | Asking price (Sale listings) |
+| `monthly_rent_eur` | Monthly rent (Rental listings) |
+| `price_per_sqm` | Derived price density |
+| `days_on_market` | Listing age — used as demand proxy |
+| `latitude` / `longitude` | Geolocation |
+| `last_sold_price_eur` | Previous transaction — used to compute growth |
+| `parking_spots` / `gym` / `swimming_pool` / `elevator` | Amenity flags |
+| `furnishing_status` | Furnished / Semi / Unfurnished |
+| `energy_rating` | EU efficiency label A–G |
+| `floor_number` | Floor level |
 
-The model prioritises **undervaluation** (40%) and **liquidity** (40%). The question it answers is: *where can I buy below market and exit quickly?* Cities with fast days-on-market and low price-per-sqm relative to the EU average rise to the top. A slow, overpriced market — even a prestigious one — drops down the ranking regardless of its prestige.
+### Split by Listing Type
 
-### If Your Goal Is Rental Income
-
-The model shifts weight toward **demand** (40%). The question becomes: *where are properties absorbed fastest, signalling strong tenant demand?* Cities where listings move quickly indicate a landlord's market with reliable occupancy. Undervaluation still matters for entry cost, but the velocity of the market is the primary signal.
-
-### If Your Goal Is Long-Term Appreciation
-
-The model heavily weights **growth** (50%) — the historical price appreciation from last sold price to current listing price. The question becomes: *where has capital grown fastest, and where is that momentum likely to continue?* A city that has already doubled prices is telling you something about demand fundamentals that no chart of current listings can show you.
-
-### Risk Tolerance Refinement
-
-On top of the goal-based weights, risk tolerance applies city-specific multipliers:
-
-- **Low risk** investors get bonus scores for Paris, Amsterdam, and Vienna — deep, liquid markets with institutional buyer depth that protects values in downturns
-- **High risk** investors get bonus scores for Warsaw, Prague, and Brussels — markets where the price-to-income gap still offers asymmetric upside
-- **Low risk** investors see emerging markets scored down, because the data shows they have higher days-on-market variance and thinner buyer pools
-
-### Horizon Calibration
-
-Short-horizon investors (0–1 year) get a velocity premium — cities where properties move faster score higher, because you need an exit, not just an entry. Long-horizon investors get a growth premium, because compounding appreciation over years outweighs short-term friction.
-
----
-
-## Understanding the Scores & Signals
-
-### The Investment Score (0–100)
-
-This is the composite score for each city given your specific profile. It is not a universal ranking — Brussels scores higher than Paris for a high-risk appreciation investor but lower for a low-risk rental investor. The score is personal to you.
-
-### vs City Average (the table column)
-
-This is the most actionable signal in the property table. It answers the question: *is this specific property cheap or expensive for its local market?*
-
-```
-vs City Avg = (property price/sqm − city average price/sqm) / city average price/sqm
-```
-
-| Colour | Signal | What It Means |
+| Type | Count | Notes |
 |---|---|---|
-| 🟢 Green (negative %) | Below city average | Potential undervaluation — entry advantage |
-| 🟡 Yellow (near 0%) | Fairly priced | At market — justified if other signals are strong |
-| 🔴 Red (positive %) | Above city average | Premium priced — needs justification from amenities or location |
+| Sale | 2,955 | Used for investment scoring and property table |
+| Rental | 2,045 | Used for demand context and rental yield signals |
 
-A property that is 20% below the city average in Warsaw represents a fundamentally different opportunity than one that is 20% below average in Paris — but both are signals worth investigating.
+### Price Distribution (Sale Listings)
 
-### Days on Market
-
-Low days on market means the market is absorbing supply quickly. It signals real demand, not just listing activity. For flippers, it means your exit window is shorter. For rental investors, it means tenants are competing for units. For appreciation investors, it means the demand foundation is real.
-
-### Growth Signal
-
-This is the percentage change from last sold price to current asking price across the dataset. It is a proxy for capital appreciation — what the market is pricing in based on real transaction history in that city.
-
----
-
-## What the Data Reveals About European Markets
-
-Running this analysis surfaced several patterns that directly inform the PropIQ scoring logic:
-
-**Brussels is the hidden opportunity city.** It has the highest average growth signal in the dataset (+117%) while sitting in the mid-market price band. It is neither as expensive as Paris nor as distant as Warsaw — a combination that makes it interesting for multiple investor profiles.
-
-**Berlin moves fastest.** Despite premium pricing, Berlin has the lowest average days on market (164 days) of all 10 cities. Properties there are absorbed quickly, which matters enormously for exit-focused investors.
-
-**The premium cities are not necessarily the best investments.** Paris and Amsterdam are the most expensive by a significant margin, but their growth signals are not proportionally higher. An investor chasing appreciation gets more from Brussels or Madrid at a fraction of the entry cost.
-
-**Warsaw has the most room to run.** At €1,503/sqm it is the most undervalued city in the dataset relative to the EU average. For an investor with a long horizon and high risk tolerance, the price gap to the EU average represents structural upside — if that convergence thesis plays out.
-
-**Villa vs Apartment dynamics are clear in the data.** Villas average 164 days on market. Apartments average 174 days. That 10-day difference sounds small, but in a fast-moving market it is the difference between a clean exit and a price negotiation. For liquidity-sensitive investors, apartments win.
+| Percentile | Price |
+|---|---|
+| Minimum | €50,000 |
+| 10th | €221,132 |
+| 25th | €367,347 |
+| Median | €646,363 |
+| 75th | €1,229,698 |
+| 90th | €2,236,793 |
+| Maximum | €13,287,305 |
 
 ---
 
-## The Scoring Engine — For the Curious
+## Analytical Framework
 
-The full mathematical model behind PropIQ's city rankings:
+The analysis is structured around four investment signals, each derived directly from fields in the dataset:
 
-### Four Component Scores
+### Signal 1 — Undervaluation
 
+Measures how cheap a city's average price per sqm is relative to the EU-wide average across all 10 cities. A city priced below the EU average has room for mean reversion — the core of a value investing thesis applied to real estate.
+
+At the property level, the same logic applies: each listing is compared against its own city's average, not the EU average. A property 20% below its city average is the actionable entry signal.
+
+### Signal 2 — Demand Velocity
+
+`days_on_market` is used as a proxy for demand. A low days-on-market figure means supply is being absorbed quickly — buyers (or tenants) are competing for stock. This matters differently by investment goal: for a flipper it determines exit speed, for a rental investor it signals occupancy reliability, for a long-term holder it signals underlying demand fundamentals.
+
+### Signal 3 — Price Growth
+
+Calculated as:
 ```
-Undervaluation  =  max(0,  (EU_avg_ppsqm − city_avg_ppsqm) / EU_avg_ppsqm  × 100)
-Demand          =  max(0,  (EU_avg_dom − city_avg_dom) / EU_avg_dom  × 100  +  50)
-Growth          =  min(100, city_avg_growth × 50)
-Liquidity       =  max(0,  100 − (city_avg_dom / 365 × 100))
+growth = (sale_price_eur − last_sold_price_eur) / last_sold_price_eur
 ```
 
-### Goal-Based Weight Table
+This is the only backward-looking signal in the model. It does not predict future growth — it reveals where capital has already been moving, which is the closest proxy the dataset provides for momentum.
+
+### Signal 4 — Liquidity
+
+Derived from days on market but framed as an exit measure rather than a demand measure. A market where properties sell in 90 days is materially more liquid than one where they sit for 300 days. For investors with shorter horizons or leverage, liquidity is not optional.
+
+### Composite Score
+
+The four signals are combined into a single Investment Score using weighted addition. The weights are not fixed — they shift based on the investor's stated goal:
 
 | Goal | Undervaluation | Demand | Growth | Liquidity |
 |---|---|---|---|---|
@@ -218,27 +160,90 @@ Liquidity       =  max(0,  100 − (city_avg_dom / 365 × 100))
 | Rental | 20% | 40% | 20% | 20% |
 | Appreciation | 20% | 10% | 50% | 20% |
 
-### Risk & Location Multipliers Applied After Base Score
-
-```
-Low risk  + [Paris / Amsterdam / Vienna]   → score × 1.12
-High risk + [Warsaw / Prague / Brussels]   → score × 1.12
-Low risk  + [Warsaw / Prague / Brussels]   → score × 0.85
-
-Major cities preference + major city       → score × 1.15
-Emerging preference + emerging city        → score × 1.15
-
-Short horizon bonus  →  score + (50 − city_avg_dom) × 0.2
-Long horizon bonus   →  score + city_avg_growth × 5
-
-Final score clamped to range [0, 100]
-```
+After the base score is computed, city-specific multipliers are applied based on risk tolerance and location preference, then the score is clamped to [0, 100].
 
 ---
 
-## Data Analysis Code
+## Key Market Findings
 
-The Python analysis that built the city benchmarks and prepared the clean dataset:
+### City Benchmarks
+
+| City | Country | Avg €/sqm | Avg Days Listed | Avg Growth | Listings |
+|---|---|---|---|---|---|
+| Paris | France | €5,201 | 172 days | +97% | 730 |
+| Amsterdam | Netherlands | €4,754 | 183 days | +99% | 592 |
+| Berlin | Germany | €3,233 | 164 days | +75% | 641 |
+| Brussels | Belgium | €2,784 | 172 days | +117% | 305 |
+| Vienna | Austria | €2,774 | 170 days | +93% | 532 |
+| Rome | Italy | €2,760 | 173 days | +82% | 536 |
+| Prague | Czech Republic | €2,181 | 162 days | +80% | 335 |
+| Madrid | Spain | €2,171 | 175 days | +96% | 551 |
+| Lisbon | Portugal | €1,881 | 171 days | +78% | 409 |
+| Warsaw | Poland | €1,503 | 171 days | +71% | 369 |
+
+### What the Data Reveals
+
+**Brussels is the most interesting anomaly in the dataset.** It has the highest growth signal (+117%) while sitting in the mid-market price band. It is neither as expensive as Paris nor as geographically peripheral as Warsaw. For an appreciation investor, it is the clearest signal in the data.
+
+**Berlin is the fastest market.** At 164 average days on market, it absorbs listings faster than any other city in the dataset. For investors who need liquidity — whether because of leverage, short horizons, or exit flexibility — Berlin's market depth is meaningful.
+
+**The premium cities are not the best growth plays.** Paris and Amsterdam command the highest prices but their growth signals (+97% and +99%) are not proportionally higher than mid-market cities like Brussels (+117%) or Madrid (+96%). Price leadership does not imply growth leadership.
+
+**Warsaw has the largest undervaluation gap.** At €1,503/sqm it sits 48% below the EU average in this dataset. For an investor with a long horizon and appetite for emerging market risk, that gap represents the widest structural upside of any city in the analysis.
+
+**Apartments are more liquid than villas by a measurable margin.** Average days on market: Villas 164 days, Apartments 174 days. The direction is counterintuitive — villas move faster on average — but the gap is narrow enough that property-specific factors (location, condition, pricing) dominate. The more useful signal is within-city variation, which the property table surfaces through the vs City Average column.
+
+---
+
+## How the Scoring Model Works
+
+### City-Level Components
+
+```
+Undervaluation  =  max(0,  (EU_avg_ppsqm − city_avg_ppsqm) / EU_avg_ppsqm  × 100)
+Demand          =  max(0,  (EU_avg_dom − city_avg_dom) / EU_avg_dom  × 100  + 50)
+Growth          =  min(100, city_avg_growth × 50)
+Liquidity       =  max(0,  100 − (city_avg_dom / 365 × 100))
+```
+
+Where:
+- `EU_avg_ppsqm` = €2,903 (mean across all 10 cities)
+- `EU_avg_dom` = 172 days (mean across all 10 cities)
+- `city_avg_growth` = mean of individual property growth values per city
+
+### Risk & Location Multipliers
+
+```
+Low risk  + [Paris / Amsterdam / Vienna]    → base score × 1.12
+High risk + [Warsaw / Prague / Brussels]    → base score × 1.12
+Low risk  + [Warsaw / Prague / Brussels]    → base score × 0.85
+
+Major cities preference + major city        → base score × 1.15
+Emerging preference    + emerging city      → base score × 1.15
+Major cities preference + emerging city     → base score × 0.80
+
+Short horizon → score + (50 − city_avg_dom) × 0.2
+Long horizon  → score + city_avg_growth × 5
+
+Final: clamp to [0, 100]
+```
+
+### Property-Level Signal (vs City Average)
+
+For each individual listing in the filtered results table:
+
+```
+vs_city_avg = (property.price_per_sqm − city.avg_ppsqm) / city.avg_ppsqm
+```
+
+Negative = below city average (potential value entry)
+Positive = above city average (premium pricing)
+
+This is the most actionable signal for an investor who has already decided on a city — it tells them whether a specific property is cheap or expensive within that local market context.
+
+---
+
+## Analysis Code — Python
 
 ```python
 import pandas as pd
@@ -261,8 +266,8 @@ print(df[['sale_price_eur', 'monthly_rent_eur',
 
 
 # ── 2. FEATURE ENGINEERING ──────────────────────────────────────────────────
-# Historical price growth: how much has each property appreciated
-# since its last transaction? This is our appreciation signal.
+# Price growth: how much has each property appreciated since last transaction?
+# This is the only backward-looking signal — a historical momentum indicator.
 df['growth'] = (
     (df['sale_price_eur'] - df['last_sold_price_eur'])
     / df['last_sold_price_eur']
@@ -270,8 +275,8 @@ df['growth'] = (
 
 
 # ── 3. CITY-LEVEL BENCHMARKS ────────────────────────────────────────────────
-# These become the reference points for every individual property score.
-# A property's value is meaningless without knowing what's normal in its city.
+# Every individual property signal is meaningless without a local reference.
+# These city averages become the denominator for undervaluation calculations.
 city_stats = df.groupby('city').agg(
     avg_price_sqm = ('price_per_sqm',  'mean'),
     avg_days      = ('days_on_market', 'mean'),
@@ -287,8 +292,8 @@ print(city_stats.to_string())
 
 
 # ── 4. GROWTH SIGNAL BY CITY ─────────────────────────────────────────────────
-# Only look at Sale listings — rental records don't have meaningful sale price
-# growth data and would distort the appreciation signal.
+# Rental listings do not carry meaningful sale price growth data.
+# Isolate Sale listings for the appreciation analysis.
 df_sale = df[df['listing_type'] == 'Sale'].copy()
 growth_by_city = df_sale.groupby('city')['growth'].mean().round(3)
 
@@ -296,35 +301,34 @@ print('\nAverage price growth since last sale, by city:')
 print(growth_by_city)
 
 
-# ── 5. LIQUIDITY BY PROPERTY TYPE ────────────────────────────────────────────
-# Days on market by property type reveals which asset classes
-# are absorbed fastest — critical for exit-planning investors.
+# ── 5. DEMAND VELOCITY BY PROPERTY TYPE ─────────────────────────────────────
+# Days on market by property type — which asset classes
+# are absorbed fastest? Informs property type recommendations.
 type_demand = df.groupby('property_type')['days_on_market'].mean().round(1)
 print('\nAverage days on market by property type:')
 print(type_demand)
 
 
-# ── 6. BUDGET DISTRIBUTION ───────────────────────────────────────────────────
-# Understanding the price distribution shapes the slider defaults.
-# Setting defaults at p10–p90 ensures most users see real results
-# without having to adjust anything.
+# ── 6. PRICE DISTRIBUTION ────────────────────────────────────────────────────
+# Understanding the full price range shapes the budget slider defaults
+# in the interactive output. Setting wide defaults ensures the analysis
+# surfaces results without requiring the user to adjust anything first.
 sale_prices = df[df['listing_type'] == 'Sale']['sale_price_eur'].dropna()
 prices_sorted = sorted(sale_prices)
 n = len(prices_sorted)
 
 print('\nSale price distribution:')
-for label, pct in [('Min','0'),('p10','10'),('p25','25'),
-                   ('p50','50'),('p75','75'),('p90','90'),('Max','100')]:
+for label, pct in [('Min','0'), ('p10','10'), ('p25','25'), ('p50','50'),
+                   ('p75','75'), ('p90','90'), ('Max','100')]:
     idx = 0 if pct == '0' else (-1 if pct == '100' else int(n * int(pct) / 100))
     print(f"  {label}:  €{prices_sorted[idx]:,.0f}")
 print(f"  Total sale listings: {n:,}")
 
 
-# ── 7. EXPORT CLEAN JSON FOR THE APP ─────────────────────────────────────────
-# Critical: pandas exports NaN for missing floats. NaN is valid Python
-# but ILLEGAL in JSON. The browser's JSON.parse() throws silently on NaN,
-# leaving allProperties empty and every budget filter returning zero results.
-# Replace all NaN/Inf with null before serialising.
+# ── 7. EXPORT CLEAN JSON ──────────────────────────────────────────────────────
+# pandas exports missing floats as NaN — valid Python, illegal JSON.
+# JSON.parse() in the browser throws silently on NaN, returning undefined
+# and leaving the entire property array empty. Clean before serialising.
 
 cols = [
     'property_id', 'property_type', 'listing_type', 'city', 'country',
@@ -347,92 +351,163 @@ def clean_value(val):
 
 records = [{k: clean_value(v) for k, v in row.items()} for row in records]
 
-# Assert before saving — do not skip this check
+# Verify before writing — do not skip this
 raw = json.dumps(records, separators=(',', ':'))
-assert 'NaN' not in raw and 'Infinity' not in raw, "Invalid JSON — browser will reject this"
+assert 'NaN' not in raw and 'Infinity' not in raw, "Invalid JSON values remain"
 
 with open('data.json', 'w') as f:
     f.write(raw)
 
 print(f"\nExported {len(records):,} records ({len(raw):,} bytes)")
-print("Zero NaN values confirmed — safe for browser JSON.parse()")
+print("Zero NaN confirmed — safe for browser JSON.parse()")
+```
+
+### Analysis Output
+
+```
+Shape: (5000, 25)
+
+City benchmarks:
+        city  avg_price_sqm  avg_days  count    avg_price         country
+   Amsterdam        4754.25    183.39    592  1652546.52     Netherlands
+      Berlin        3232.56    164.34    641   974956.85         Germany
+    Brussels        2783.67    172.47    305   956922.21         Belgium
+      Lisbon        1880.98    170.50    409   694433.16        Portugal
+      Madrid        2171.06    175.18    551   790773.06           Spain
+       Paris        5200.85    172.22    730  1708074.72          France
+      Prague        2181.47    162.30    335   747992.46  Czech Republic
+        Rome        2760.13    173.04    536   958883.25           Italy
+      Vienna        2774.07    170.10    532   875516.36         Austria
+      Warsaw        1503.03    170.57    369   465858.66          Poland
+
+Average growth since last sale:
+Brussels    1.169  (+117%)
+Amsterdam   0.992  (+99%)
+Paris       0.971  (+97%)
+Madrid      0.963  (+96%)
+Vienna      0.932  (+93%)
+Rome        0.822  (+82%)
+Prague      0.800  (+80%)
+Lisbon      0.776  (+78%)
+Berlin      0.750  (+75%)
+Warsaw      0.705  (+71%)
+
+Days on market by property type:
+Villa        164.4
+Townhouse    169.0
+Office       169.8
+Warehouse    172.0
+Mixed-Use    172.6
+Apartment    173.7
+Retail       177.8
+
+Sale price distribution:
+  Min:   €50,000
+  p10:   €221,132
+  p25:   €367,347
+  p50:   €646,363
+  p75:   €1,229,698
+  p90:   €2,236,793
+  Max:   €13,287,305
+  Total sale listings: 2,955
 ```
 
 ---
 
-## Building the App
+## Delivering the Analysis — HTML App Code
 
-The complete Python script that takes the clean JSON and injects it into the self-contained HTML file:
+Once the analysis was complete, the question became: **how do I deliver these findings in a way that is personalised to the reader?**
+
+The answer was to build the output in HTML/CSS/JavaScript — a medium that lets the scoring model run live in the browser, responding to the investor's inputs in real time, without requiring any software, login, or connection.
+
+### Embedding the Dataset
+
+The biggest technical decision was how to get 5,000 records into the browser. A `fetch()` call to an external file fails silently when the HTML is opened directly from a local folder (`file://` protocol blocks network requests). The solution was to embed the entire cleaned dataset as a JavaScript constant at build time:
 
 ```python
-import json, math, pandas as pd
-
-# ── STEP 1: Build clean dataset ──────────────────────────────────────────────
-df = pd.read_excel('EU_Real_Estate_Dataset.xlsx')
-df['growth'] = (
-    (df['sale_price_eur'] - df['last_sold_price_eur'])
-    / df['last_sold_price_eur']
-).round(4)
-
-cols = [
-    'property_id','property_type','listing_type','city','country',
-    'bedrooms','bathrooms','square_meters','sale_price_eur','monthly_rent_eur',
-    'price_per_sqm','days_on_market','latitude','longitude',
-    'last_sold_price_eur','parking_spots','gym','swimming_pool',
-    'elevator','furnishing_status','energy_rating','growth'
-]
-
-df_export = df[cols].copy().where(pd.notna(df[cols]), other=None)
-records = df_export.to_dict(orient='records')
-
-def clean_value(val):
-    if val is None: return None
-    if isinstance(val, float) and (math.isnan(val) or math.isinf(val)): return None
-    return val
-
-records = [{k: clean_value(v) for k, v in row.items()} for row in records]
-data_json = json.dumps(records, separators=(',', ':'))
-
-assert 'NaN' not in data_json
-
-
-# ── STEP 2: Embed dataset inside the HTML ────────────────────────────────────
-# Why embed instead of fetch()?
-# Browsers block fetch() requests on file:// protocol (local files).
-# Embedding makes the app completely self-contained — open it anywhere,
-# no server, no network, no dependencies.
+# Inject dataset into the HTML at build time
 with open('app_template.html', 'r') as f:
     html = f.read()
 
+with open('data.json', 'r') as f:
+    data = f.read()
+
+# Replace the first <script> tag to inject the data constant
 html = html.replace(
     '<script>',
-    f'<script>\nconst EMBEDDED_DATA = {data_json};\n',
-    1  # Only replace the first <script> tag
+    f'<script>\nconst EMBEDDED_DATA = {data};\n',
+    1
 )
 
 with open('PropIQ_Real_Estate_Advisor.html', 'w') as f:
     f.write(html)
-
-print(f"Built PropIQ_Real_Estate_Advisor.html")
-print(f"Total size: {len(html) / 1_000_000:.1f} MB")
-print(f"Properties embedded: {len(records):,}")
 ```
 
-### How the App Uses the Embedded Data
+The HTML file becomes entirely self-contained — one file, open in any browser, no dependencies.
+
+### The Scoring Model in JavaScript
+
+The same analytical logic from Python runs live in the browser, recalculating on every input change:
 
 ```javascript
-// On results screen load — no fetch, no async, no failure modes
-async function loadAndRenderProperties(top3) {
-  if (allProperties.length === 0) {
-    allProperties = EMBEDDED_DATA; // The 5,000 properties, right here in memory
-  }
-  renderPropertiesTable(top3);
+// City-level scoring — runs once per city per answer change
+function scoreCity(city) {
+  const { goal, location, risk, horizon } = answers;
+
+  // Four component scores (0–100 each)
+  const undervalScore = Math.max(0,
+    (globalAvgPpsqm - city.avg_ppsqm) / globalAvgPpsqm * 100
+  );
+  const demandScore = Math.max(0,
+    (globalAvgDom - city.avg_dom) / globalAvgDom * 100 + 50
+  );
+  const growthScore   = Math.min(100, city.avg_growth * 50);
+  const liquidScore   = Math.max(0, 100 - (city.avg_dom / 365 * 100));
+
+  // Goal-based weights — same logic as the Python analysis
+  const weights = {
+    flip:         { underval:0.4, demand:0.1, growth:0.1, liquid:0.4 },
+    rental:       { underval:0.2, demand:0.4, growth:0.2, liquid:0.2 },
+    appreciation: { underval:0.2, demand:0.1, growth:0.5, liquid:0.2 },
+  };
+  const w = weights[goal] || { underval:0.3, demand:0.3, growth:0.2, liquid:0.2 };
+
+  let base = undervalScore * w.underval
+           + demandScore   * w.demand
+           + growthScore   * w.growth
+           + liquidScore   * w.liquid;
+
+  // Risk multipliers
+  const majorCities    = ['Paris','Amsterdam','Berlin','Vienna','Rome'];
+  const emergingCities = ['Warsaw','Lisbon','Prague','Brussels','Madrid'];
+
+  if (risk === 'low'  && majorCities.includes(city.city))    base *= 1.12;
+  if (risk === 'high' && emergingCities.includes(city.city)) base *= 1.12;
+  if (risk === 'low'  && emergingCities.includes(city.city)) base *= 0.85;
+
+  if (location === 'major'    && majorCities.includes(city.city))    base *= 1.15;
+  if (location === 'emerging' && emergingCities.includes(city.city)) base *= 1.15;
+  if (location === 'major'    && emergingCities.includes(city.city)) base *= 0.80;
+  if (location === 'emerging' && majorCities.includes(city.city))    base *= 0.80;
+
+  // Horizon adjustments
+  if (horizon === 'short') base += (50 - city.avg_dom) * 0.2;
+  if (horizon === 'long')  base += city.avg_growth * 5;
+
+  return Math.min(100, Math.max(0, base));
 }
+```
 
-// Property filtering — budget, city, and type all applied at once
+### Property Filtering
+
+Listings are filtered against the investor's budget, top-ranked cities, and property type preference — then sorted by the same investment signal used for city scoring:
+
+```javascript
 function renderPropertiesTable(top3) {
-  const topCities = top3.map(c => c.city);
+  const topCities  = top3.map(c => c.city);
+  const cityAvgMap = Object.fromEntries(CITY_DATA.map(c => [c.city, c.avg_ppsqm]));
 
+  // Filter to budget, top cities, listing type, and property type
   let filtered = allProperties.filter(p =>
     topCities.includes(p.city)
     && p.sale_price_eur >= answers.budgetMin
@@ -444,10 +519,8 @@ function renderPropertiesTable(top3) {
     filtered = filtered.filter(p => p.property_type === answers.propType);
   }
 
-  // Sort by investment signal — undervaluation + speed composite
+  // Sort by undervaluation + speed composite
   filtered.sort((a, b) => {
-    const cityAvgMap = {};
-    CITY_DATA.forEach(c => { cityAvgMap[c.city] = c.avg_ppsqm; });
     const score = p => {
       const cityAvg = cityAvgMap[p.city] || 2500;
       return (cityAvg - p.price_per_sqm) / cityAvg * 50
@@ -456,92 +529,67 @@ function renderPropertiesTable(top3) {
     return score(b) - score(a);
   });
 
+  // Display top 50 with vs City Average conditional formatting
   const show = filtered.slice(0, 50);
-  // Render with conditional formatting on vs City Avg column
+  // ... render table rows
 }
 ```
 
 ---
 
-## The Design Philosophy
+## Design Decisions
 
-PropIQ uses a design system called **Sovereign Ledger** — a private wealth aesthetic built on three principles:
+The visual presentation follows a **private wealth aesthetic** — the design is intended to match the seriousness of the analysis and the profile of the investor receiving it.
 
-### 1. Surfaces, Not Borders
+**No borders for layout.** Sections are separated by background colour shifts across a four-step darkness scale (Onyx `#0d0d0f` through `#242430`), not lines. This is a deliberate choice — borders make interfaces feel like forms. Background shifts make them feel like surfaces.
 
-High-end financial interfaces do not use lines to separate sections. They use depth. PropIQ has four layers of darkness that create hierarchy purely through background contrast — no `1px solid` borders anywhere in the layout. The transition of tone is the divider.
+**Typography is editorial.** Headlines use Cormorant Garamond (serif), a typeface associated with financial publishing. Body text uses Outfit (sans-serif), clean and readable at small sizes. The pairing signals that this is a professional instrument, not a consumer product.
 
-```
-Layer 1 — Onyx #0d0d0f     →  Header, left advisor panel
-Layer 2 — Onyx #141418     →  Main canvas, right panel
-Layer 3 — Onyx #1c1c22     →  Cards, table wrappers, elevated elements
-Layer 4 — Onyx #242430     →  Input fields, deepest insets
-```
+**Gold as the accent is intentional.** The warm gold gradient (`#c9a84c → #e2b95a`) connects the visual language to real estate, wealth, and investment — without being decorative. Every gold element carries a meaning: a score, a recommendation, a selected state.
 
-### 2. Glass for Floating Elements
-
-Anything that floats above the canvas — the tab bar, the landing stats, the option buttons on hover — uses glassmorphism: a semi-transparent background with `backdrop-filter: blur`, giving the impression of frosted glass over the dark surface.
-
-### 3. Editorial Typography
-
-Headlines use **Cormorant Garamond**, a classical serif that carries the weight of financial authority. Body text uses **Outfit**, a geometric sans-serif that is clean and readable at small sizes. The combination signals that this is not a consumer app — it is a professional instrument.
-
-The gold (`#c9a84c`) is never flat. It always appears as a warm gradient (`#c9a84c → #e2b95a`), which gives it the depth of real metal rather than a flat accent colour.
+**Glassmorphism for floating elements.** The tab bar, landing stats panel, and option buttons on hover use `backdrop-filter: blur` with semi-transparent backgrounds. This creates depth without adding visual noise.
 
 ---
 
-## Known Issues & Fixes
+## Bugs Encountered & Fixed
 
-### Properties table showing empty despite valid budget range
+### Properties table returned zero results despite valid budget
 
-**Root cause:** Python's `pandas` exports missing float values as `NaN`. JavaScript's `JSON.parse()` throws a `SyntaxError` on `NaN` (which is not valid JSON) and fails silently — `allProperties` stays as an empty array, and every filter returns zero results.
+**Cause:** `pandas` exports missing float values as `NaN`. This is legal Python but illegal JSON. The browser's `JSON.parse()` fails silently on `NaN` — it does not throw a visible error, it just returns `undefined` for the entire parse. `allProperties` stays empty. Every filter returns zero results.
 
-**Fix:** Pass all values through a cleaner before serialising, then assert the output contains no `NaN` before writing:
+**Fix:** Clean all values through a function that converts `NaN` and `Infinity` to `None` before serialising. Assert the output contains neither before writing to disk.
 
-```python
-def clean_value(val):
-    if val is None: return None
-    if isinstance(val, float) and (math.isnan(val) or math.isinf(val)): return None
-    return val
+### App showed no data when opened as a local file
 
-records = [{k: clean_value(v) for k, v in row.items()} for row in records]
-raw = json.dumps(records, separators=(',', ':'))
-assert 'NaN' not in raw  # Never skip this
-```
+**Cause:** Browsers block `fetch()` on `file://` protocol. An external `data.json` will always fail when the HTML is opened from the filesystem without a local server.
 
-### App works in browser but shows no data when opened as a local file
+**Fix:** Embed the dataset directly inside the HTML file at build time as a JavaScript constant. No fetch required.
 
-**Root cause:** Browsers block `fetch()` requests on `file://` protocol for security. An external `data.json` file is unreachable when the HTML is opened from a local folder.
+### Power BI port — `goal` threw a DAX syntax error
 
-**Fix:** Embed the dataset as a `const` directly inside the HTML at build time. One file. No dependencies.
+**Cause:** `GOAL` is a reserved keyword in DAX.
 
-### Power BI — `goal` throws a syntax error in DAX
+**Fix:** Prefix reserved-word VAR names with underscore: `VAR _goal`, `VAR _risk`, `VAR _horizon`.
 
-**Root cause:** `GOAL` is a reserved keyword in DAX.
+### Power BI port — `COUNTROWS(FILTER('data', [In Budget] = 1))` threw a context error
 
-**Fix:** Prefix all VAR names that might conflict with reserved words with an underscore: `VAR _goal`, `VAR _risk`, `VAR _horizon`.
+**Cause:** Measures that use `SELECTEDVALUE()` cannot be called from inside a `FILTER()` on a table. DAX has no row context to resolve them at that point.
 
-### Power BI — `COUNTROWS(FILTER('data', [In Budget] = 1))` throws a context error
-
-**Root cause:** Measures that use `SELECTEDVALUE()` internally cannot be called from inside a `FILTER()` on a table. DAX does not have a row context to resolve them.
-
-**Fix:** Inline all filter logic directly inside the outer measure using column references and VAR declarations — never nest a context-dependent measure inside `FILTER()`.
+**Fix:** Inline all filter conditions directly inside the outer measure using column references and VAR declarations. Never nest a context-dependent measure inside `FILTER()`.
 
 ---
 
 ## Getting Started
 
-Download the HTML file and open it in any browser. That is the entire installation process.
-
 ```bash
 git clone https://github.com/YOUR_USERNAME/propiq.git
 cd propiq
 
-# Open directly — no server needed
+# Open the analysis output — no install, no server, no login
 open PropIQ_Real_Estate_Advisor.html
 ```
 
-To rebuild from the source Excel file after modifying the data:
+To rerun the Python analysis from source:
 
 ```bash
 pip install pandas openpyxl
@@ -550,21 +598,20 @@ python analysis/analyse.py
 
 ---
 
-## What's Next
+## What I Would Do With More Data
 
-- **Mortgage calculator** — monthly payment projections at user-defined LTV and interest rate, turning the investment score into a cash flow forecast
-- **Rental yield view** — for properties with both sale price and rental data, surface the gross yield as a primary metric for income investors
-- **Neighbourhood scoring** — move from city-level to postcode-level benchmarks as richer data becomes available
-- **One-click investment brief** — export a PDF summary of your personalised recommendations to share with a co-investor or financial advisor
-- **Live data integration** — connect to a real-time property API so the intelligence updates with the market
-- **Portfolio mode** — track multiple properties across cities and monitor how the investment score evolves over time
+- **Neighbourhood-level pricing** — city averages flatten a lot of within-city variation. A postcode-level benchmark would make the vs City Average signal significantly sharper.
+- **Time series** — with listing date history, the days-on-market trend (getting faster or slower) would be more valuable than the current snapshot figure.
+- **Rental yield** — with both sale price and monthly rent on the same properties, a gross yield calculation would add a direct income return signal alongside the capital appreciation signal.
+- **Transaction volume** — the number of completed sales, not just listings, would make the demand signal more reliable. Days on market is a proxy; actual transaction velocity is the real measure.
+- **Macroeconomic overlay** — linking city-level data to GDP growth, population flow, and interest rate environment would contextualise why some markets are growing faster than others.
 
 ---
 
 ## License
 
-MIT — use it, build on it, make money with it.
+MIT — use it, build on it, extend it.
 
 ---
 
-*Most data tools show you everything and help you decide nothing. PropIQ shows you what matters for your situation and tells you exactly what to do about it.*
+*The analysis was done in Python. The findings were delivered in HTML. The tool choice was deliberate — because how you present an analysis is part of the analysis.*
