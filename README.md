@@ -1,8 +1,5 @@
 # PropIQ — The EU Real Estate Investment Advisor
 
-> **Stop browsing listings. Start making decisions.**
-> PropIQ turns 5,000+ European property listings into a personalised investment brief — tailored to your goal, your budget, and your risk appetite. Answer 6 questions. Walk away knowing exactly where to invest, what to buy, and what to avoid.
-
 [![Cities Covered](https://img.shields.io/badge/Cities-10%20Major%20EU%20Markets-gold?style=flat-square)](#the-10-markets)
 [![Properties Analysed](https://img.shields.io/badge/Properties%20Analysed-5%2C000%2B-blue?style=flat-square)](#dataset)
 [![No Login Required](https://img.shields.io/badge/No%20Login-Open%20In%20Browser-green?style=flat-square)](#getting-started)
